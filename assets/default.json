@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Maths",
+        "Grade": "2",
+        "Coefficient": "1"
+    },
+    {
+        "name": "EPS",
+        "Grade": "3",
+        "Coefficient": "2"
+    }
+]
