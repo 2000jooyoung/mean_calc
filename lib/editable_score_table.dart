@@ -18,6 +18,6 @@ class EditableScoreTable extends EditableDataTable {
         continue;
       }
     }
-    return (totalScore / totalLength).toString();
+    return (totalScore / totalLength).toStringAsFixed(2);
   }
 }

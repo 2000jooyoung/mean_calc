@@ -61,7 +61,7 @@ class _InputSubjectHomeState extends State<InputSubjectHome> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           child: IconButton(
-            icon: const Icon(Icons.back_hand),
+            icon: const Icon(Icons.arrow_circle_right_outlined),
             onPressed: () {
               context.goNamed(AppRoutee.calculateMean.name);
             },

@@ -62,15 +62,32 @@ class EditableDataTable {
           Text(
             (row[columnName]).toString(),
           ),
+          showEditIcon: columnName == "grade",
+          onTap: () {
+            print(row[columnName]);
+          },
         ));
       }
       rows.add(
         DataRow(
           cells: cells,
+          color: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            return null;
+            // return Colors.amber.shade700; // Use the default value.
+          }),
         ),
       );
     }
     return DataTable(
+      dataRowColor: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          // return Colors.amberAccent;
+          return null;
+        }
+        return null;
+      }),
       columns: column,
       rows: rows,
       showCheckboxColumn: true,

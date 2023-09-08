@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mean_calc/src/constants/app_sizes.dart';
 import 'package:mean_calc/src/features/firestore/login_info.dart';
 import 'package:mean_calc/src/features/firestore/reposotory/subject_repository.dart';
 
@@ -35,27 +36,33 @@ class DisplayMeanPage extends StatelessWidget {
           future: initTable(),
           builder: (context, AsyncSnapshot<EditableScoreTable> snapshot) {
             if (snapshot.hasData) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  snapshot.data!.getDataTable(),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 220, 209),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      child: Text(
-                        snapshot.data!.calculateMean(),
-                        style: const TextStyle(color: Colors.black),
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    snapshot.data!.getDataTable(),
+                    gapH20,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black38,
+                        borderRadius: BorderRadius.circular(7),
                       ),
-                    ),
-                  )
-                ],
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(50, 25, 50, 25),
+                        child: Text(
+                          snapshot.data!.calculateMean(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               );
             } else {
-              return const Placeholder();
+              return const CircularProgressIndicator();
             }
           },
         ),
