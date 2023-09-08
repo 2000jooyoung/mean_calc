@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mean_calc/src/features/firestore/login_info.dart';
+import 'package:mean_calc/src/features/firestore/reposotory/subject_repository.dart';
+import 'package:mean_calc/src/models/target_subject.dart';
 
 class EditableDataTable {
   EditableDataTable(
@@ -15,8 +18,27 @@ class EditableDataTable {
   }
 
   // row settor
-  void setRowsDict(row) {
+  void setRowsDict(Map<String, dynamic> row) {
     rowDicts.add(row);
+  }
+
+  void setRowFromSubject(TargeSubject subject) {
+    rowDicts.add(subject.toJson());
+  }
+
+  void resetTable() {
+    rowDicts = [];
+  }
+
+  Future<List<TargeSubject>> getAllSubjectsFromDB() async {
+    LoginInfo li = LoginInfo();
+    TaskRepository repo = TaskRepository(userId: li.userId ?? "");
+
+    final subjects = await repo.getAllSubjectsFromUserId();
+    for (var subject in subjects) {
+      rowDicts.add(subject.toJson());
+    }
+    return subjects;
   }
 
   // table gettor
@@ -51,6 +73,7 @@ class EditableDataTable {
     return DataTable(
       columns: column,
       rows: rows,
+      showCheckboxColumn: true,
     );
   }
 }

@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mean_calc/subjects.dart';
+import 'package:mean_calc/src/common_widgets/input_form.dart';
+import 'package:mean_calc/src/models/target_subject.dart';
 
-import 'display_mean_page.dart';
-import 'editable_score_table.dart';
-import 'input_form.dart';
+import '../../../../../display_mean_page.dart';
+import '../../../../../editable_score_table.dart';
 
 class CalculatorHome extends StatefulWidget {
   const CalculatorHome({
@@ -41,7 +41,8 @@ String calculateMean(List<String> scores) {
 
 class _CalculatorHomeState extends State<CalculatorHome> {
   List<DataRow> scoresArchive = [];
-  List<String> scores = [for (var i = 0; i < 3; i += 1) ""];
+  TargeSubject scores =
+      const TargeSubject(name: "name", grade: 0.0, coefficient: 0);
   String result = "";
   List<TextEditingController> fieldTextList = [
     for (var i = 0; i < 3; i += 1) TextEditingController()
@@ -73,17 +74,23 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   Future<void> loadJsonData() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     await signInWithAnonymous();
-    DocumentSnapshot<Map<String, dynamic>> dataDocument =
-        await firestore.collection("subjects").doc(anonymouId).get();
-    // 아노니머스 아이디로 바꾸시길
-    Map<String, dynamic>? data = dataDocument.data();
-    if (data == null) {
-      return;
-    }
-    Subjects? subjectsData = Subjects.fromJson(data);
-    for (var row in subjectsData.toJson()["subjects"]) {
-      table.setRowsDict(row);
-    }
+
+    // final query = firestore
+    //     .collection("TargetSubjects")
+    //     .doc(anonymouId)
+    //     .withConverter<TargeSubject>(
+    //       fromFirestore: (snapshot, _) =>
+    //           TargetSubjects.fromJson(snapshot.data()!),
+    //       toFirestore: (model, _) => model.toJson(),
+    //     );
+
+    // final documents = await query.get();
+
+    // final TargetSubjects = documents.data();
+
+    // for (var element in TargetSubjects?.TargetSubjects ?? <TargetSubject>[]) {
+    //   table.setRowsDict(element.toJson());
+    // }
 
     setState(() {});
   }
@@ -104,7 +111,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                     hintText: "name",
                     changedCallback: (text) {
                       setState(() {
-                        scores[0] = text;
+                        scores = scores.copyWith(name: text);
                       });
                     },
                     textController: fieldTextList[0],
@@ -114,7 +121,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                     hintText: "GPA",
                     changedCallback: (text) {
                       setState(() {
-                        scores[1] = text;
+                        scores = scores.copyWith(
+                            grade: double.tryParse(text) ?? 0.0);
                       });
                     },
                     textController: fieldTextList[1],
@@ -124,7 +132,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                     hintText: "coefficient",
                     changedCallback: (text) {
                       setState(() {
-                        scores[2] = text;
+                        scores = scores.copyWith(
+                            coefficient: int.tryParse(text) ?? 0);
                       });
                     },
                     textController: fieldTextList[2],
@@ -172,7 +181,6 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             setState(() {
-              result = calculateMean(scores);
               Navigator.push(
                 context,
                 CupertinoPageRoute(
@@ -197,33 +205,21 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   }
 
   void saveDataTableToJson() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    Map<String, dynamic> updateResult = {"subjects": table.getRowDicts()};
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // final TargetSubjects =
+    //     TargetSubjects.fromJson({"TargetSubjects": table.getRowDicts()});
 
-    //  이것도 아이디로
-
-    Subjects updatedSubjects = Subjects.fromJson(updateResult);
-    await firestore.collection("subjects").doc(anonymouId).set(
-          updatedSubjects.toJson(),
-        );
+    // await firestore.collection("TargetSubjects").doc(anonymouId).set(TargetSubjects);
 
     setState(() {});
   }
 
   void addRowInDataTable() {
-    if (isListEmpty(scores)) {
-      setState(() {});
-      // 좀 더 깔끔한 방법이 있을듯
-      // firestore 를 사용한다면 좀 더 좋은 방법이 될듯함
-      table.setRowsDict({
-        'name': scores[0],
-        'grade': scores[1],
-        'coefficient': scores[2],
-      });
-      for (var i = 0; i < 3; i++) {
-        fieldTextList[i].clear();
-        scores[i] = "";
-      }
+    setState(() {});
+    table.setRowsDict(scores.toJson());
+
+    for (var i = 0; i < 3; i++) {
+      fieldTextList[i].clear();
     }
   }
 }

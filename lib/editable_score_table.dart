@@ -8,10 +8,10 @@ class EditableScoreTable extends EditableDataTable {
     int totalLength = 0;
 
     for (var row in rowDicts) {
-      String coef = row["coefficient"];
-      String grade = row["grade"];
+      int coef = row["coefficient"];
+      double grade = row["grade"];
       try {
-        double currentScore = double.parse(grade) * double.parse(coef);
+        double currentScore = grade * coef;
         totalScore += currentScore;
         totalLength += 1;
       } on Exception {
